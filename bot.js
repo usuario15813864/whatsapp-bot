@@ -19,35 +19,31 @@ console.log("Conectando a WhatsApp...")
 }
 
 if(connection === "open"){
-console.log("BOT CONECTADO")
+console.log("BOT CONECTADO A WHATSAPP")
 }
 
 })
 
-// GENERAR CODIGO
+// generar código después de iniciar
 
 setTimeout(async () => {
 
-try {
-
-if(!sock.authState.creds.registered){
+try{
 
 const code = await sock.requestPairingCode("593995647783")
 
 console.log("================================")
-console.log("CODIGO PARA VINCULAR WHATSAPP")
+console.log("CODIGO PARA VINCULAR WHATSAPP:")
 console.log(code)
 console.log("================================")
 
-}
+}catch(e){
 
-} catch(err){
-
-console.log("Error generando código")
+console.log("No se pudo generar el código todavía...")
 
 }
 
-},10000)
+},20000)
 
 }
 
