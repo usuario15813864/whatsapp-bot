@@ -15,36 +15,18 @@ sock.ev.on("connection.update", async (update) => {
 
 const { connection, lastDisconnect } = update
 
-if(connection === "connecting"){
+if (connection === "connecting") {
 console.log("Conectando a WhatsApp...")
 }
 
-if(connection === "open"){
+if (connection === "open") {
 console.log("BOT CONECTADO A WHATSAPP")
 }
 
-if(connection === "close"){
+// generar código solo cuando está listo
+if (connection === "connecting" && !sock.authState.creds.registered) {
 
-const shouldReconnect =
-lastDisconnect?.error?.output?.statusCode !== DisconnectReason.loggedOut
-
-console.log("Conexión cerrada, reconectando...")
-
-if(shouldReconnect){
-startBot()
-}
-
-}
-
-})
-
-// GENERAR CODIGO
-
-setTimeout(async () => {
-
-try{
-
-if(!sock.authState.creds.registered){
+try {
 
 const code = await sock.requestPairingCode("593995647783")
 
@@ -53,15 +35,26 @@ console.log("CODIGO PARA VINCULAR WHATSAPP")
 console.log(code)
 console.log("================================")
 
+} catch (e) {
+console.log("Esperando que WhatsApp permita generar el código...")
 }
 
-}catch(err){
+}
 
-console.log("Esperando conexión para generar código...")
+if (connection === "close") {
+
+const shouldReconnect =
+lastDisconnect?.error?.output?.statusCode !== DisconnectReason.loggedOut
+
+console.log("Conexión cerrada, reconectando...")
+
+if (shouldReconnect) {
+startBot()
+}
 
 }
 
-},20000)
+})
 
 }
 
