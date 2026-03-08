@@ -3,9 +3,10 @@ const { default: makeWASocket, useMultiFileAuthState } = require("@whiskeysocket
 async function startBot(){
 
 const { state, saveCreds } = await useMultiFileAuthState("auth")
-
 const sock = makeWASocket({
-auth: state
+auth: state,
+browser: ["Minegoc8Bot","Chrome","1.0"]
+
 })
 
 sock.ev.on("creds.update", saveCreds)
