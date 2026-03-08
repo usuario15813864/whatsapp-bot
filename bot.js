@@ -1,12 +1,52 @@
-{
-"name":"whatsapp-bot",
-"version":"1.0.0",
-"main":"bot.js",
-"scripts":{
-"start":"node bot.js"
-},
-"dependencies":{
-"@whiskeysockets/baileys":"^6.7.0",
-"qrcode-terminal":"^0.12.0"
+const { default: makeWASocket, useMultiFileAuthState } = require("@whiskeysockets/baileys")
+const qrcode = require("qrcode-terminal")
+
+async function startBot(){
+
+const { state, saveCreds } = await useMultiFileAuthState("auth")
+
+const sock = makeWASocket({
+auth: state
+})
+
+sock.ev.on("creds.update", saveCreds)
+
+sock.ev.on("connection.update",(update)=>{
+
+const { qr, connection } = update
+
+if(qr){
+qrcode.generate(qr,{small:true})
 }
+
+if(connection==="open"){
+console.log("Bot conectado")
 }
+
+})
+
+sock.ev.on("messages.upsert",async({messages})=>{
+
+const msg = messages[0]
+
+if(!msg.message) return
+
+const text = msg.message.conversation || msg.message.extendedTextMessage?.text
+
+const from = msg.key.remoteJid
+
+if(!text) return
+
+if(text.toLowerCase().includes("hola")){
+
+await sock.sendMessage(from,{
+text:"Hola 👋 gracias por escribir."
+})
+
+}
+
+})
+
+}
+
+startBot()
